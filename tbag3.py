@@ -1,4 +1,3 @@
-
 import tkinter as tk
 from tkinter import messagebox
 import time
@@ -38,20 +37,109 @@ class AdventureGame(tk.Tk):
 
         self.input_entry.delete(0, tk.END) # Clear the input field
 
-    def explore_left_path(self):
+    def explore_left_path(self):   #1
+        self.text_output.insert(tk.END, "\n")
         self.text_output.insert(tk.END, "You chose to go left.\n")
         time.sleep(1)
-        self.text_output.insert(tk.END, "You find a treasure chest!\n")
-        self.show_message("Congratulations!", "You win!")
+        self.text_output.insert(tk.END, "You find a chest!\n")
+        self.text_output.insert(tk.END, "\nYou have more choices:\n (1) Open the chest.\n (2) Leave the chest alone.")
+        self.wait_for_input(self.process_left_choices)
 
-    def explore_right_path(self):
+    def explore_right_path(self): #2
+        self.text_output.insert(tk.END, "\n")
         self.text_output.insert(tk.END, "You chose to go right.\n")
         time.sleep(1)
-        self.text_output.insert(tk.END, "You encounter a dragon.")
-        self.show_message("Game Over!", "\n You Died.\n The dragon killed you.")
+        self.text_output.insert(tk.END, "You encounter a sleeping dragon with a PRECIOUS DIAMOND on its tail.\n")
+        self.text_output.insert(tk.END, "\nYou have more choices:\n (1) You take the diamond .\n (2) Leave the Diamond.")
+        self.wait_for_input(self.process_right_choices)
+
+    def wait_for_input(self, callback):
+        self.input_entry.config(state=tk.NORMAL)
+        self.submit_button.config(command=callback)
+
+    def process_left_choices(self): #1A
+        user_input = self.input_entry.get().lower()
+        self.text_output.insert(tk.END, f"\n> {user_input}\n")
+
+        if "1" in user_input:
+            self.text_output.insert(tk.END, "You open the chest and find a magical amulet!\n")
+            self.explore_amulet_path()
+        elif "2" in user_input:
+            self.text_output.insert(tk.END, "You decide to leave the chest alone.\n")
+            self.explore_non_amulet_path() #1AB
+        else:
+            self.text_output.insert(tk.END, "Invalid choice. Try again.\n")
+            self.wait_for_input(self.process_left_choices)
+
+        self.input_entry.delete(0, tk.END) # Clear the input field
+
+    def process_right_choices(self):#2A
+        user_input = self.input_entry.get().lower()
+        self.text_output.insert(tk.END, f"\n> {user_input}\n")
+
+        if "1" in user_input:
+            self.text_output.insert(tk.END, "You try to take the diamond but the Dragon Woke up!\n")
+            self.show_message("GAME OVER!", "You Die!")#2AA
+        elif "2" in user_input:
+            self.text_output.insert(tk.END, "You decide to leave the Diamond. Still the Dragon Woke up!\n")
+            self.show_message("GAME OVER!", "You DIE!")#2AB
+        else:
+            self.text_output.insert(tk.END, "Invalid choice. Try again.\n")
+            self.wait_for_input(self.process_right_choices)
+
+    
+        self.input_entry.delete(0, tk.END) # Clear the input field
+
+    def explore_amulet_path(self):
+        self.text_output.insert(tk.END, "\n")
+        self.text_output.insert(tk.END, "You found the amulet.")
+        time.sleep(1)
+        self.text_output.insert(tk.END, "\nYou have more choices:\n\n (1) Use the amulets power to find the Treasure .\n (2)Use the amulets power to get out of the mansion.")
+        self.wait_for_input(self.process_amulet_wear)
+
+    def process_amulet_wear(self):
+        user_input = self.input_entry.get().lower()
+        self.text_output.insert(tk.END, f"\n> {user_input}\n")
+
+        if "1" in user_input:
+            self.text_output.insert(tk.END, "You used the amulets power to find the Treasure!\n")
+            self.show_message("CONGRATULATIONS!","YOU WIN. \n YOU FOUND THE TREASURE!")
+        elif "2" in user_input:
+            self.text_output.insert(tk.END, "You used the amulets power to get out of the mansion!\n")
+            self.show_message("GAME OVER!", "You DIE!\n GETTING OUT WAS NEVER AN OPTION.")
+        else:
+            self.text_output.insert(tk.END, "Invalid choice. Try again.\n")
+            self.process_amulet_wear()
+        
+        self.input_entry.delete(0, tk.END) # Clear the input field
+    
+    def explore_non_amulet_path(self):
+        self.text_output.insert(tk.END, "\n")
+        self.text_output.insert(tk.END, "You decided to leave the chest alone!. Two new rooms have appeared")
+        time.sleep(1)
+        self.text_output.insert(tk.END, "\nYou have more choices:\n\n (1) Enter the left room.\n (2)Enter the right room.")
+        self.wait_for_input(self.process_new_room)
+
+    def process_new_room(self): #1A
+        user_input = self.input_entry.get().lower()
+        self.text_output.insert(tk.END, f"\n> {user_input}\n")
+
+        if "1" in user_input:
+            self.text_output.insert(tk.END, "You entered the left room. You found the TREASURE\n")
+            self.show_message("CONGRATULATIONS","YOU WIN.\nYOU FOUND THE TREASURE")
+        elif "2" in user_input:
+            self.text_output.insert(tk.END, "You entered the right room.\n")
+            self.explore_right_path()
+        else:
+            self.text_output.insert(tk.END, "Invalid choice. Try again.\n")
+            self.wait_for_input(self.process_new_room)
+
+        self.input_entry.delete(0, tk.END) # Clear the input field
+    
 
     def show_message(self, title, message):
         messagebox.showinfo(title, message)
+        self.quit()
 
 if __name__ == "__main__":
     game = AdventureGame()
